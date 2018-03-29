@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	W = 1600
+	W = 2560
 	H = 1600
 
 	CenterReal = 0
@@ -22,7 +22,7 @@ const (
 
 	Fovy = 1
 
-	Supersampling = 2
+	Supersampling = 1
 
 	Sw = Supersampling * W
 	Sh = Supersampling * H
@@ -40,24 +40,11 @@ func complexFunction(z complex128) complex128 {
 }
 
 func complexColor(z complex128) color.Color {
-	modulus := cmplx.Abs(z)
 	phase := cmplx.Phase(z)
-
-	t0 := modulus / (modulus + 1)
-
-	// t1 := math.Sin(phase)
-	// t1 = (t1 + 1) / 2
-
-	t1 := phase/math.Pi + 1
-	if t1 > 1 {
-		t1 = 2 - t1
+	t := phase/math.Pi + 1
+	if t > 1 {
+		t = 2 - t
 	}
-
-	t := math.Pow(t0, 2) * t1
-	// t = t0
-
-	// t = ease.InOutQuad(t)
-
 	return Colormap.At(t)
 }
 
