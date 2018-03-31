@@ -48,17 +48,30 @@ func complexColor(z complex128) color.Color {
 	return Colormap.At(t)
 }
 
+func pixelCoordinates(px, py int) (float64, float64) {
+	x := ((float64(px)/(Sw-1))*2-1)*AspectRatio*HalfFovy + CenterReal
+	y := ((float64(Sh-py-1)/(Sh-1))*2-1)*HalfFovy + CenterImag
+	return x, y
+}
+
 func main() {
 	im := image.NewNRGBA64(image.Rect(0, 0, Sw, Sh))
 
+	x0, y0 := pixelCoordinates(0, 0)
+	x1, y1 := pixelCoordinates(Sw-1, Sh-1)
+	dx := (x1 - x0) / (Sw - 1)
+	dy := (y1 - y0) / (Sh - 1)
+
+	y := y0
 	for py := 0; py < Sh; py++ {
-		y := ((float64(Sh-py-1)/(Sh-1))*2-1)*HalfFovy + CenterImag
+		x := x0
 		for px := 0; px < Sw; px++ {
-			x := ((float64(px)/(Sw-1))*2-1)*AspectRatio*HalfFovy + CenterReal
 			z := complexFunction(complex(x, y))
 			c := complexColor(z)
 			im.Set(px, py, c)
+			x += dx
 		}
+		y += dy
 	}
 
 	downsampled := resize.Resize(W, H, im, resize.Bilinear)
